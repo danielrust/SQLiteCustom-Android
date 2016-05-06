@@ -1,8 +1,14 @@
-//import org.apache.tools.ant.taskdefs.condition.Os
-
 import org.apache.tools.ant.taskdefs.condition.Os
 
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+def groupId = 'org.sqlite'
+archivesBaseName = 'sqlite-android'
+def versionMajor = 3
+def versionMinor = 12
+def versionPatch = 2
+version = "${versionMajor}.${versionMinor}.${versionPatch}"
 
 android {
     compileSdkVersion 23
@@ -10,9 +16,6 @@ android {
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 23
-        versionCode 11
-        versionName "3.0"
     }
 
     sourceSets.main {
@@ -52,4 +55,38 @@ dependencies {
 clean {
     delete 'src/main/obj'
     delete 'src/main/libs'
+}
+
+task installLocal(type: Upload) {
+    description "Installs the artifacts to the local Maven repository."
+    configuration = configurations['archives']
+    repositories {
+        mavenDeployer {
+            repository (url: "file://${System.env.HOME}/.m2/repository/")
+            pom.groupId = groupId
+            pom.artifactId = archivesBaseName
+            pom.version = version + "-" + new Date().format("yyyyMMdd")
+            pom.packaging = 'aar'
+            uniqueVersion = false // don't put in a timestamp on the filename (other project will not be able to depend on it)
+        }
+
+    }
+}
+
+task deploy(type: Upload) {
+    description "Deploys the artifacts to the Nexus repository."
+    configuration = configurations['archives']
+    repositories {
+        mavenDeployer {
+            repository(url: "https://code.lds.org/nexus/content/repositories/mobile-releases/") {
+                authentication(userName: ldsmobileRepoUsername, password: ldsmobileRepoPassword)
+            }
+            pom.groupId = groupId
+            pom.artifactId = archivesBaseName
+            pom.version = version + "-" + new Date().format("yyyyMMdd")
+            pom.packaging = 'aar'
+            uniqueVersion = false // don't put in a timestamp on the filename (other project will not be able to depend on it)
+        }
+
+    }
 }
