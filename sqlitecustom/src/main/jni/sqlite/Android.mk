@@ -37,7 +37,12 @@ LOCAL_SRC_FILES:=                             \
 	android_database_SQLiteDebug.cpp      \
 	JNIHelp.cpp JniConstants.cpp
 
-LOCAL_SRC_FILES += sqlite3secure.c
+ifeq ($(USE_SEE), true)
+    LOCAL_SRC_FILES += sqlite3see.c
+else
+    LOCAL_SRC_FILES += sqlite3secure.c
+endif
+
 LOCAL_C_INCLUDES += $(LOCAL_PATH) $(LOCAL_PATH)/nativehelper/
 
 LOCAL_MODULE:= sqliteX
