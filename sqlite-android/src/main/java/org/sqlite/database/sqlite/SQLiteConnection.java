@@ -28,8 +28,8 @@ import android.database.CursorWindow;
 import android.database.DatabaseUtils;
 import org.sqlite.database.ExtraUtils;
 import org.sqlite.database.sqlite.SQLiteDebug.DbStats;
-import org.sqlite.os.CancellationSignal;
-import org.sqlite.os.OperationCanceledException;
+import android.os.CancellationSignal;
+import android.os.OperationCanceledException;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.util.LruCache;
@@ -40,8 +40,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import static android.R.attr.name;
 
 /**
  * Represents a SQLite database connection.
@@ -94,9 +92,6 @@ import static android.R.attr.name;
 public final class SQLiteConnection implements CancellationSignal.OnCancelListener {
     private static final String TAG = "SQLiteConnection";
     private static final boolean DEBUG = false;
-
-    public static final int SQLITE_OK = 0;
-    public static final int SQLITE_ERROR = 1;
 
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
     private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];

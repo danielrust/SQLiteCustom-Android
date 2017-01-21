@@ -23,7 +23,9 @@ package org.sqlite.database.sqlite;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.os.CancellationSignal;
 import android.os.Looper;
+import android.os.OperationCanceledException;
 import android.text.TextUtils;
 import android.util.EventLog;
 import android.util.Log;
@@ -36,8 +38,6 @@ import org.sqlite.database.ExtraUtils;
 import org.sqlite.database.SQLException;
 import org.sqlite.database.enums.Tokenizer;
 import org.sqlite.database.sqlite.SQLiteDebug.DbStats;
-import org.sqlite.os.CancellationSignal;
-import org.sqlite.os.OperationCanceledException;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -2205,8 +2205,8 @@ public final class SQLiteDatabase extends SQLiteClosable {
          * See {@link SQLiteCursor#SQLiteCursor(SQLiteCursorDriver, String, SQLiteQuery)}.
          */
         public Cursor newCursor(SQLiteDatabase db,
-                                SQLiteCursorDriver masterQuery, String editTable,
-                                SQLiteQuery query);
+                SQLiteCursorDriver masterQuery, String editTable,
+                SQLiteQuery query);
     }
 
     /**

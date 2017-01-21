@@ -20,13 +20,13 @@
 
 package org.sqlite.database.sqlite;
 
+import android.os.CancellationSignal;
+import android.os.OperationCanceledException;
 import android.os.SystemClock;
 import android.util.Log;
 import android.util.Printer;
 
 import org.sqlite.database.sqlite.SQLiteDebug.DbStats;
-import org.sqlite.os.CancellationSignal;
-import org.sqlite.os.OperationCanceledException;
 
 import java.io.Closeable;
 import java.util.ArrayList;

@@ -36,7 +36,7 @@ import org.sqlite.database.sqlite.SQLiteException;
 import org.sqlite.database.sqlite.SQLiteFullException;
 import org.sqlite.database.sqlite.SQLiteProgram;
 import org.sqlite.database.sqlite.SQLiteStatement;
-import org.sqlite.os.OperationCanceledException;
+import android.os.OperationCanceledException;
 import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;

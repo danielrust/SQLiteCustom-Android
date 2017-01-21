@@ -21,8 +21,9 @@
 package org.sqlite.database.sqlite;
 
 import android.database.Cursor;
+import android.os.CancellationSignal;
+
 import org.sqlite.database.sqlite.SQLiteDatabase.CursorFactory;
-import org.sqlite.os.CancellationSignal;
 
 /**
  * A cursor driver that uses the given query directly.
