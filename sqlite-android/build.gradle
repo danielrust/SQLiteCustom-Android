@@ -1,32 +1,12 @@
-import org.apache.tools.ant.taskdefs.condition.Os
-
-buildscript {
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0-beta2'
-    }
-}
-
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
-def groupId = 'org.sqlite'
-archivesBaseName = 'sqlite-android'
-def versionMajor = 4
-def versionMinor = 0
-def versionPatch = 0
-version = "${versionMajor}.${versionMinor}.${versionPatch}"
-
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 27
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 25
+        minSdkVersion 19
+        targetSdkVersion 27
         versionCode 12
     }
 
@@ -36,25 +16,29 @@ android {
     }
 
     // call regular ndk-build(.cmd) script from app directory
-    task ndkBuild(type: Exec) {
-        Properties properties = new Properties()
-        properties.load(project.rootProject.file('local.properties').newDataInputStream())
-        def ndkDir = properties.getProperty('ndk.dir')
-        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-            commandLine 'ndk-build.cmd', '-C', file('src/main').absolutePath
-        } else {
-            commandLine ndkDir + '/ndk-build', '-C', file('src/main').absolutePath
+    externalNativeBuild {
+        ndkBuild {
+            path 'src/main/jni/Android.mk'
         }
-    }
-
-    tasks.withType(JavaCompile) {
-        compileTask -> compileTask.dependsOn ndkBuild
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            ndk {
+                // Building with NDK_DEBUG=1 for mips crashes the compiler in ndk 14.
+                abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+            }
+        }
+        debug {
+            minifyEnabled false
+            debuggable true
+            jniDebuggable true
+            ndk {
+                // Building with NDK_DEBUG=1 for mips crashes the compiler in ndk 14.
+                abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+            }
         }
     }
 }
@@ -71,36 +55,23 @@ clean {
     delete 'src/main/libs'
 }
 
+// =============== Maven Deployment ===============
+// ./gradlew clean check installLocal
 task installLocal(type: Upload) {
     description "Installs the artifacts to the local Maven repository."
     configuration = configurations['archives']
     repositories {
         mavenDeployer {
             repository (url: "file://${System.env.HOME}/.m2/repository/")
-            pom.groupId = groupId
-            pom.artifactId = archivesBaseName
-            pom.version = version + "-" + new Date().format("yyyyMMdd")
-            pom.packaging = 'aar'
+            pom.groupId = GROUP
+            pom.artifactId = POM_ARTIFACT_ID
+            pom.version = VERSION_NAME
+            pom.packaging = POM_PACKAGING
             uniqueVersion = false // don't put in a timestamp on the filename (other project will not be able to depend on it)
         }
-
     }
 }
 
-task deploy(type: Upload) {
-    description "Deploys the artifacts to the Nexus repository."
-    configuration = configurations['archives']
-    repositories {
-        mavenDeployer {
-            repository(url: "https://code.lds.org/nexus/content/repositories/mobile-releases/") {
-                authentication(userName: ldsmobileRepoUsername, password: ldsmobileRepoPassword)
-            }
-            pom.groupId = groupId
-            pom.artifactId = archivesBaseName
-            pom.version = version + "-" + new Date().format("yyyyMMdd")
-            pom.packaging = 'aar'
-            uniqueVersion = false // don't put in a timestamp on the filename (other project will not be able to depend on it)
-        }
-
-    }
-}
+// DEPLOY to Maven Central (this must be the last line of this file)
+// ./gradlew clean check uploadArchives
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
