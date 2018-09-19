@@ -20,13 +20,14 @@
 
 package org.sqlite.database.sqlite;
 
+import org.sqlite.database.sqlite.CloseGuard;
+
+import org.sqlite.database.sqlite.SQLiteDebug.DbStats;
 import android.os.CancellationSignal;
 import android.os.OperationCanceledException;
 import android.os.SystemClock;
 import android.util.Log;
 import android.util.Printer;
-
-import org.sqlite.database.sqlite.SQLiteDebug.DbStats;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -34,8 +35,6 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.LockSupport;
-
-/* import android.util.PrefixPrinter; */
 
 /**
  * Maintains a pool of active SQLite database connections.
