@@ -215,6 +215,13 @@ public final class SQLiteConnection implements CancellationSignal.OnCancelListen
                 mConfiguration.label,
                 SQLiteDebug.DEBUG_SQL_STATEMENTS, SQLiteDebug.DEBUG_SQL_TIME);
 
+        if (mConfiguration.see != null) {
+            String password = mConfiguration.see.getPassword();
+            if (password != null) {
+                execute("PRAGMA key = '" + password + "'", null, null);
+            }
+        }
+
         setPageSize();
         setForeignKeyModeFromConfiguration();
         setWalModeFromConfiguration();

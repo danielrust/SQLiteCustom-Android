@@ -22,9 +22,12 @@
 package org.sqlite.database.sqlite;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
+import android.util.Log;
+
 import org.sqlite.database.DatabaseErrorHandler;
 import org.sqlite.database.sqlite.SQLiteDatabase.CursorFactory;
-import android.util.Log;
+
 import java.io.File;
 
 /**
@@ -45,7 +48,7 @@ import java.io.File;
  * <p class="note"><strong>Note:</strong> this class assumes
  * monotonically increasing version numbers for upgrades.</p>
  */
-public abstract class SQLiteOpenHelper {
+public abstract class SQLiteOpenHelper implements SQLiteEncryptionExtension {
     private static final String TAG = SQLiteOpenHelper.class.getSimpleName();
 
     // When true, getReadableDatabase returns a read-only database if it is just being opened.
@@ -66,6 +69,12 @@ public abstract class SQLiteOpenHelper {
     private boolean mIsInitializing;
     private boolean mEnableWriteAheadLogging;
     private final DatabaseErrorHandler mErrorHandler;
+
+    @Nullable
+    @Override
+    public String getPassword() {
+        return null;
+    }
 
     /**
      * Create a helper object to create, open, and/or manage a database.
@@ -248,16 +257,16 @@ public abstract class SQLiteOpenHelper {
                     db.reopenReadWrite();
                 }
             } else if (mName == null) {
-                db = SQLiteDatabase.create(null);
+                db = SQLiteDatabase.create(null, this);
             } else {
                 try {
                     if (DEBUG_STRICT_READONLY && !writable) {
                         final String path = mContext.getDatabasePath(mName).getPath();
                         db = SQLiteDatabase.openDatabase(path, mFactory,
-                                SQLiteDatabase.OPEN_READONLY, mErrorHandler);
+                                SQLiteDatabase.OPEN_READONLY, mErrorHandler, this);
                     } else {
                         db = SQLiteDatabase.openOrCreateDatabase(
-                            mName, mFactory, mErrorHandler
+                            mName, mFactory, mErrorHandler, this
                         );
                     }
                 } catch (SQLiteException ex) {
@@ -268,7 +277,7 @@ public abstract class SQLiteOpenHelper {
                             + " for writing (will try read-only):", ex);
                     final String path = mContext.getDatabasePath(mName).getPath();
                     db = SQLiteDatabase.openDatabase(path, mFactory,
-                            SQLiteDatabase.OPEN_READONLY, mErrorHandler);
+                            SQLiteDatabase.OPEN_READONLY, mErrorHandler, this);
                 }
             }
 

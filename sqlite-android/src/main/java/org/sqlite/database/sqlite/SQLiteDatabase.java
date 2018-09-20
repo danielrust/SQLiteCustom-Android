@@ -259,7 +259,14 @@ public final class SQLiteDatabase extends SQLiteClosable {
             DatabaseErrorHandler errorHandler) {
         mCursorFactory = cursorFactory;
         mErrorHandler = errorHandler != null ? errorHandler : new DefaultDatabaseErrorHandler();
-        mConfigurationLocked = new SQLiteDatabaseConfiguration(path, openFlags);
+        mConfigurationLocked = new SQLiteDatabaseConfiguration(path, openFlags, null);
+    }
+
+    private SQLiteDatabase(String path, int openFlags, CursorFactory cursorFactory,
+            DatabaseErrorHandler errorHandler, SQLiteEncryptionExtension see) {
+        mCursorFactory = cursorFactory;
+        mErrorHandler = errorHandler != null ? errorHandler : new DefaultDatabaseErrorHandler();
+        mConfigurationLocked = new SQLiteDatabaseConfiguration(path, openFlags, see);
     }
 
     @Override
@@ -699,6 +706,13 @@ public final class SQLiteDatabase extends SQLiteClosable {
         return db;
     }
 
+    public static SQLiteDatabase openDatabase(String path, CursorFactory factory, int flags,
+            DatabaseErrorHandler errorHandler, SQLiteEncryptionExtension see) {
+        SQLiteDatabase db = new SQLiteDatabase(path, flags, factory, errorHandler, see);
+        db.open();
+        return db;
+    }
+
     /**
      * Equivalent to openDatabase(file.getPath(), factory, CREATE_IF_NECESSARY).
      */
@@ -719,6 +733,28 @@ public final class SQLiteDatabase extends SQLiteClosable {
     public static SQLiteDatabase openOrCreateDatabase(String path, CursorFactory factory,
             DatabaseErrorHandler errorHandler) {
         return openDatabase(path, factory, CREATE_IF_NECESSARY, errorHandler);
+    }
+
+    /**
+     * Equivalent to openDatabase(file.getPath(), factory, CREATE_IF_NECESSARY).
+     */
+    public static SQLiteDatabase openOrCreateDatabase(File file, CursorFactory factory, SQLiteEncryptionExtension see) {
+        return openOrCreateDatabase(file.getPath(), factory, see);
+    }
+
+    /**
+     * Equivalent to openDatabase(path, factory, CREATE_IF_NECESSARY).
+     */
+    public static SQLiteDatabase openOrCreateDatabase(String path, CursorFactory factory, SQLiteEncryptionExtension see) {
+        return openDatabase(path, factory, CREATE_IF_NECESSARY, null, see);
+    }
+
+    /**
+     * Equivalent to openDatabase(path, factory, CREATE_IF_NECESSARY, errorHandler).
+     */
+    public static SQLiteDatabase openOrCreateDatabase(String path, CursorFactory factory,
+            DatabaseErrorHandler errorHandler, SQLiteEncryptionExtension see) {
+        return openDatabase(path, factory, CREATE_IF_NECESSARY, errorHandler, see);
     }
 
     /**
@@ -831,6 +867,12 @@ public final class SQLiteDatabase extends SQLiteClosable {
         // This is a magic string with special meaning for SQLite.
         return openDatabase(SQLiteDatabaseConfiguration.MEMORY_DB_PATH,
                 factory, CREATE_IF_NECESSARY);
+    }
+
+    public static SQLiteDatabase create(CursorFactory factory, SQLiteEncryptionExtension see) {
+        // This is a magic string with special meaning for SQLite.
+        return openDatabase(SQLiteDatabaseConfiguration.MEMORY_DB_PATH,
+                factory, CREATE_IF_NECESSARY, null, see);
     }
 
     /**

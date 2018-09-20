@@ -12,15 +12,12 @@
 **
 */
 #include "../sqlite3.h"
-#include "../sqlite3ext.h"
 #include "extension.h"
 #include <android/log.h>
 
 #include <android/log.h>
 
 #define APPNAME "HTML Tokenizer"
-
-SQLITE_EXTENSION_INIT1
 
 /*
 ** Register a tokenizer implementation with FTS3 or FTS4.
@@ -61,7 +58,6 @@ int sqlite3_tokenizers_init(
       const sqlite3_api_routines *pApi  /* API methods */
       )
 {
-   SQLITE_EXTENSION_INIT2(pApi)
 
    return 0;
 }

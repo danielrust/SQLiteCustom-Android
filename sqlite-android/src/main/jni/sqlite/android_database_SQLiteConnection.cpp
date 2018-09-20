@@ -929,6 +929,7 @@ int register_android_database_SQLiteConnection(JNIEnv *env)
 
 extern int register_android_database_SQLiteGlobal(JNIEnv *env);
 extern int register_android_database_SQLiteDebug(JNIEnv *env);
+extern int register_android_database_SQLiteConnection_Tokenizer(JNIEnv *env);  // LDS Added
 
 } // namespace android
 
@@ -941,6 +942,7 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
   android::register_android_database_SQLiteConnection(env);
   android::register_android_database_SQLiteDebug(env);
   android::register_android_database_SQLiteGlobal(env);
+  android::register_android_database_SQLiteConnection_Tokenizer(env); // LDS Added
 
   return JNI_VERSION_1_4;
 }

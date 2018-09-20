@@ -55,6 +55,11 @@ public final class SQLiteDatabaseConfiguration {
     public final String path;
 
     /**
+     * The database password.
+     */
+    public final SQLiteEncryptionExtension see;
+
+    /**
      * The label to use to describe the database when it appears in logs.
      * This is derived from the path but is stripped to remove PII.
      */
@@ -100,12 +105,13 @@ public final class SQLiteDatabaseConfiguration {
      * @param path The database path.
      * @param openFlags Open flags for the database, such as {@link SQLiteDatabase#OPEN_READWRITE}.
      */
-    public SQLiteDatabaseConfiguration(String path, int openFlags) {
+    public SQLiteDatabaseConfiguration(String path, int openFlags, SQLiteEncryptionExtension see) {
         if (path == null) {
             throw new IllegalArgumentException("path must not be null.");
         }
 
         this.path = path;
+        this.see = see;
         label = stripPathForLogs(path);
         this.openFlags = openFlags;
 
@@ -125,6 +131,7 @@ public final class SQLiteDatabaseConfiguration {
         }
 
         this.path = other.path;
+        this.see = other.see;
         this.label = other.label;
         updateParametersFrom(other);
     }
@@ -174,4 +181,5 @@ public final class SQLiteDatabaseConfiguration {
         }
         return EMAIL_IN_DB_PATTERN.matcher(path).replaceAll("XX@YY");
     }
+
 }
