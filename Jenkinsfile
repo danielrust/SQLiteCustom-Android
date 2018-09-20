@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        LIB_MODULE_NAME = 'lds-sqlite-android'
+        LIB_MODULE_NAME = 'sqlite-android'
     }
 
     stages {
