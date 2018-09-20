@@ -16,16 +16,16 @@ pipeline {
                         sh './gradlew clean assembleDebug'
                     }
                 }
-                stage("Test") {
-                    steps {
-                        sh "./gradlew $LIB_MODULE_NAME:testDebugUnitTest"
-                    }
-                    post {
-                        always {
-                            junit '**/build/test-results/**/TEST-*.xml'
-                        }
-                    }
-                }
+//                stage("Test") {
+//                    steps {
+//                        sh "./gradlew $LIB_MODULE_NAME:testDebugUnitTest"
+//                    }
+//                    post {
+//                        always {
+//                            junit '**/build/test-results/**/TEST-*.xml'
+//                        }
+//                    }
+//                }
                 stage("Lint") {
                     steps {
                         sh "./gradlew $LIB_MODULE_NAME:lintDebug"
@@ -49,16 +49,16 @@ pipeline {
                         sh './gradlew clean assembleDebug'
                     }
                 }
-                stage("Test") {
-                    steps {
-                        sh "./gradlew $LIB_MODULE_NAME:testDebugUnitTest"
-                    }
-                    post {
-                        always {
-                            junit '**/build/test-results/**/TEST-*.xml'
-                        }
-                    }
-                }
+//                stage("Test") {
+//                    steps {
+//                        sh "./gradlew $LIB_MODULE_NAME:testDebugUnitTest"
+//                    }
+//                    post {
+//                        always {
+//                            junit '**/build/test-results/**/TEST-*.xml'
+//                        }
+//                    }
+//                }
                 stage("Lint") {
                     steps {
                         sh "./gradlew $LIB_MODULE_NAME:lintDebug"
