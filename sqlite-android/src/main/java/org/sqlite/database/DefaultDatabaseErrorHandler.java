@@ -48,7 +48,7 @@ import android.util.Pair;
  */
 public final class DefaultDatabaseErrorHandler implements DatabaseErrorHandler {
 
-    private static final String TAG = "DefaultDatabaseErrorHandler";
+    private static final String TAG = "DefaultDatabaseEHandler";
 
     /**
      * defines the default method to be invoked when database corruption is detected.
