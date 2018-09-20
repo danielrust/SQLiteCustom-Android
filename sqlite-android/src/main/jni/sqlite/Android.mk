@@ -52,8 +52,6 @@ LOCAL_SRC_FILES += sqlite3.c
 # ********** Tokenizer Files **********
 
 LOCAL_SRC_FILES += android_database_SQLiteTokenizer.cpp
-LOCAL_SRC_FILES += tokenizers/extension.c
-#LOCAL_SRC_FILES += tokenizers/character/character_tokenizer.c
 LOCAL_SRC_FILES += stopwords.cpp
 LOCAL_SRC_FILES += fts3_html_tokenizer.c
 

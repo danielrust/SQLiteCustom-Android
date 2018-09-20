@@ -70,6 +70,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                 seeTest2()
                 ftsTest1()
                 ftsTest2()
+                ftsTest3()
                 suppCharTest1()
                 suppCharTest2()
             } catch (e: Exception) {
@@ -408,6 +409,9 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         testResult("see_test_2.5", dbIsEncrypted(), "encrypted")
     }
 
+    /**
+     * Test html tokenizer, for searching on html elements (should not find anything)
+     */
     @Throws(Exception::class)
     private suspend fun ftsTest1() {
         SQLiteDatabase.deleteDatabase(databaseFile)
@@ -436,6 +440,9 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
+    /**
+     * Test html tokenizer, for good results
+     */
     @Throws(Exception::class)
     private suspend fun ftsTest2() {
         SQLiteDatabase.deleteDatabase(databaseFile)
@@ -443,7 +450,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
             db.registerTokenizer(Tokenizer.HTML_TOKENIZER)
 
-            db.execSQL("CREATE VIRTUAL TABLE v1 USING fts3(name, tokenize=HTMLTokenizer stemmer=english)")
+            db.execSQL("CREATE VIRTUAL TABLE v1 USING fts4(name, tokenize=HTMLTokenizer stemmer=english)")
 
             db.execSQL("INSERT INTO v1 VALUES('<html> Adrenaline <b>Junkies</b> Unite </html>')")
             db.execSQL("INSERT INTO v1 VALUES('<html> Linux Nerds Reunion </html>')")
@@ -454,11 +461,66 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
             db.execSQL("INSERT INTO v1 VALUES('<html> Leian Solo Falls </html>')")
             db.execSQL("INSERT INTO v1 VALUES('<html> Bob Unites Jobs </html>')")
 
-            db.rawQuery("SELECT * FROM v1 WHERE name MATCH ?", arrayOf("unites")).use { cursor ->
+            val expectedResult1 = "2"
+            db.rawQuery("SELECT * FROM v1 WHERE name MATCH ?", arrayOf("unite")).use { cursor ->
                 if (cursor != null && cursor.moveToFirst()) {
-                    testResult("fts_text_2.0", cursor.count.toString(), "2")
+                    testResult("fts_text_2.0", cursor.count.toString(), expectedResult1)
                 } else {
-                    testResult("fts_text_2.0", "0", "1")
+                    testResult("fts_text_2.0", "0", expectedResult1)
+                }
+            }
+
+            // test to make sure we can't search on html elements
+            val expectedResult2 = "0"
+            db.rawQuery("SELECT * FROM v1 WHERE name MATCH ?", arrayOf("html")).use { cursor ->
+                if (cursor != null && cursor.moveToFirst()) {
+                    testResult("fts_text_2.1", cursor.count.toString(), expectedResult2)
+                } else {
+                    testResult("fts_text_2.1", "0", expectedResult2)
+                }
+            }
+        }
+    }
+
+    /**
+     * Test rank function
+     */
+    @Throws(Exception::class)
+    private suspend fun ftsTest3() {
+        SQLiteDatabase.deleteDatabase(databaseFile)
+        SQLiteDatabase.openOrCreateDatabase(databaseFile, null).use { db ->
+
+            db.registerTokenizer(Tokenizer.HTML_TOKENIZER)
+
+            db.execSQL("CREATE VIRTUAL TABLE people USING fts4(title, name, tokenize=HTMLTokenizer)")
+
+            db.execSQL("INSERT INTO people VALUES('Boss', '<html> Adrenaline <b>Junkies</b> Unite </html>')")
+            db.execSQL("INSERT INTO people VALUES('User', '<html> Linux Nerds Reunion </html>')")
+            db.execSQL("INSERT INTO people VALUES('User', '<html> Penicillin Users Assemble </html>')")
+            db.execSQL("INSERT INTO people VALUES('User', '<html> Burp Boss Man Returns </html>')")
+            db.execSQL("INSERT INTO people VALUES('User', '<html> Fart Hero Stinks </html>')")
+            db.execSQL("INSERT INTO people VALUES('User', '<html> Sneeze Scars Massage </html>')")
+            db.execSQL("INSERT INTO people VALUES('User', '<html> Leian Solo Falls </html>')")
+            db.execSQL("INSERT INTO people VALUES('Boss', '<html> Bob Boss Unites Jobs Boss </html>')")
+
+            db.rawQuery("SELECT * FROM people WHERE people MATCH ? ORDER BY ftsrank(matchinfo(people), 1.0, 0.5) DESC", arrayOf("boss")).use { cursor ->
+//                cursor.moveToFirst()
+//                do {
+//                    val title = cursor.getString(cursor.getColumnIndex("title"))
+//                    val name = cursor.getString(cursor.getColumnIndex("name"))
+//                    Log.e("TEST", "Title: $title    Name: $name")
+//                } while (cursor.moveToNext())
+
+                if (cursor != null && cursor.moveToFirst()) {
+                    testResult("fts_text_3.0", cursor.count.toString(), "3")
+
+                    val title = cursor.getString(cursor.getColumnIndex("title"))
+                    val name = cursor.getString(cursor.getColumnIndex("name"))
+
+                    testResult("fts_text_3.1", title, "Boss")
+                    testResult("fts_text_3.2", name, "<html> Bob Boss Unites Jobs Boss </html>")
+                } else {
+                    testResult("fts_text_3.0", "0", "1")
                 }
             }
         }

@@ -4,7 +4,7 @@
 #include <JNIHelp.h>
 
 extern "C" {
-#include "tokenizers/extension.h"
+#include "fts3_html_tokenizer.h"
 }
 
 #include "android_database_SQLiteCommon.h"
@@ -32,12 +32,10 @@ namespace android {
 
             const sqlite3_tokenizer_module *p;
 
-            if (strcmp(nameStr, HTML_NAME) == 0) {
-                set_html_tokenizer_module(&p);
-            }
+            set_html_tokenizer_module(&p);
 
             if (p != NULL) {
-                registerExtensionTokenizer(connection->db, nameStr, p);
+                registerTokenizer(connection->db, nameStr);
             }
         }
 

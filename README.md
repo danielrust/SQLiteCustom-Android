@@ -37,3 +37,22 @@
 ### Test
 
 * Run test app and verify that all tests pass
+
+## Deploying Pre-Built Library from sqlite.org
+
+* Download latest "Precompiled Binaries for Android" aar https://www.sqlite.org/download.html
+* Upload to LDS Maven Nexus
+
+Example:
+
+    mvn deploy:deploy-file -DgroupId=org.lds.sqlite \
+      -DartifactId=sqlite-android \
+      -Dversion=3.25.1 \
+      -Dpackaging=aar \
+      -Dfile=sqlite-android-3250100.aar \
+      -DrepositoryId=lds.mobile.repo \
+      -Durl=https://code.lds.org/nexus/content/repositories/mobile-3rd-party/
+
+Add Dependency to project
+
+    implementation "org.lds:sqlite-android:3.25.1"
