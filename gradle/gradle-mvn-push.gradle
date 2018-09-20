@@ -16,8 +16,24 @@
 
 /*
  * Changes from original:
- * - Different username and password variables SONATYPE_XXXX
+ * - Different username and password variables LDS_XXXX
+ * - Added support for optional dependencies
+ * - Temp Disabled Javadoc due to KotlinDoc issues
+ * + Default Repo set to LDS Nexus
  */
+buildscript {
+
+  repositories {
+    jcenter()
+  }
+
+  dependencies {
+    // Add dependency for build script,
+    // so we can access Git from our
+    // build script
+    classpath 'org.ajoberstar:grgit:1.1.0'
+  }
+}
 
 apply plugin: 'maven'
 apply plugin: 'signing'
@@ -26,25 +42,37 @@ version = VERSION_NAME
 group = GROUP
 
 def isReleaseBuild() {
-  return VERSION_NAME.contains("SNAPSHOT") == false
+  return project.hasProperty('release') && project.release
 }
 
 def getReleaseRepositoryUrl() {
   return hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL
-      : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+          : "https://code.lds.org/nexus/content/repositories/mobile-releases/"
 }
 
 def getSnapshotRepositoryUrl() {
   return hasProperty('SNAPSHOT_REPOSITORY_URL') ? SNAPSHOT_REPOSITORY_URL
-      : "https://oss.sonatype.org/content/repositories/snapshots/"
+          : "https://code.lds.org/nexus/content/repositories/mobile-snapshots/"
 }
 
 def getRepositoryUsername() {
-  return hasProperty('SONATYPE_NEXUS_USERNAME') ? SONATYPE_NEXUS_USERNAME : ""
+  return hasProperty('LDS_NEXUS_USERNAME') ? LDS_NEXUS_USERNAME : ""
 }
 
 def getRepositoryPassword() {
-  return hasProperty('SONATYPE_NEXUS_PASSWORD') ? SONATYPE_NEXUS_PASSWORD : ""
+  return hasProperty('LDS_NEXUS_PASSWORD') ? LDS_NEXUS_PASSWORD : ""
+}
+
+def getGitUsername() {
+  return hasProperty('LDS_GIT_USERNAME') ? LDS_GIT_USERNAME : ""
+}
+
+def getGitPassword() {
+  return hasProperty('LDS_GIT_PASSWORD') ? LDS_GIT_PASSWORD : ""
+}
+
+ext {
+  git = org.ajoberstar.grgit.Grgit.open(dir: file('..'), creds: new org.ajoberstar.grgit.Credentials(username: getGitUsername(), password: getGitPassword()))
 }
 
 afterEvaluate { project ->
@@ -52,6 +80,25 @@ afterEvaluate { project ->
     repositories {
       mavenDeployer {
         beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+        doFirst {
+          if (isReleaseBuild()) {
+            if (git.tag.list().collect { it.getName() }.contains(VERSION_NAME)) {
+              println "Tag $VERSION_NAME already exists"
+              println "Skipping upload"
+              throw new StopExecutionException()
+            }
+          }
+        }
+
+        doLast {
+          if (isReleaseBuild()) {
+            git.tag.add(name: VERSION_NAME)
+            git.push(tags: true)
+            println "Tag Successful"
+          }
+          println "Upload Successful"
+        }
 
         pom.groupId = GROUP
         pom.artifactId = POM_ARTIFACT_ID
@@ -91,6 +138,21 @@ afterEvaluate { project ->
             }
           }
         }
+
+        // mark optional dependencies
+//                pom.withXml {
+//                    asNode().dependencies.dependency.findAll { xmlDep ->
+//                        if (project.configurations.optional.allDependencies.findAll { dep ->
+//                            xmlDep.groupId.text() == dep.group && xmlDep.artifactId.text() == dep.name
+//                        }) {
+//                            def xmlOptional = xmlDep.optional[0];
+//                            if (!xmlOptional) {
+//                                xmlOptional = xmlDep.appendNode('optional')
+//                            }
+//                            xmlOptional.value = 'true';
+//                        }
+//                    }
+//                }
       }
     }
   }
@@ -101,7 +163,7 @@ afterEvaluate { project ->
   }
 
   if (project.getPlugins().hasPlugin('com.android.application') ||
-      project.getPlugins().hasPlugin('com.android.library')) {
+          project.getPlugins().hasPlugin('com.android.library')) {
     task install(type: Upload, dependsOn: assemble) {
       repositories.mavenInstaller {
         configuration = configurations.archives
@@ -191,12 +253,12 @@ afterEvaluate { project ->
       }
     }
 
-    task sourcesJar(type: Jar, dependsOn:classes) {
+    task sourcesJar(type: Jar, dependsOn: classes) {
       classifier = 'sources'
       from sourceSets.main.allSource
     }
 
-    task javadocJar(type: Jar, dependsOn:javadoc) {
+    task javadocJar(type: Jar, dependsOn: javadoc) {
       classifier = 'javadoc'
       from javadoc.destinationDir
     }
@@ -212,7 +274,7 @@ afterEvaluate { project ->
 
   artifacts {
     if (project.getPlugins().hasPlugin('com.android.application') ||
-        project.getPlugins().hasPlugin('com.android.library')) {
+            project.getPlugins().hasPlugin('com.android.library')) {
       archives androidSourcesJar
 //      archives androidJavadocsJar
     } else {
