@@ -12,6 +12,7 @@
 
     * delete sqlite3.c
     * rename see-sqlite3.c to sqlite3.c
+    * delete see.c
 * Update the Android SQLite Java source files
     * Create a temp directory
     * fossil clone http://www.sqlite.org/android android.fossil
@@ -38,6 +39,11 @@
 
 * Run test app and verify that all tests pass
 
+### Deploy
+
+* Update gradle.properties VERSION_NAME  (example: VERSION_NAME=3.25.2)
+* Deploy via regular LDS library release process (commit changes to release branch)
+
 ## Deploying Pre-Built Library from sqlite.org
 
 * Download latest "Precompiled Binaries for Android" aar https://www.sqlite.org/download.html
@@ -47,12 +53,12 @@ Example:
 
     mvn deploy:deploy-file -DgroupId=org.lds.sqlite \
       -DartifactId=sqlite-android \
-      -Dversion=3.25.1 \
+      -Dversion=3.25.2 \
       -Dpackaging=aar \
-      -Dfile=sqlite-android-3250100.aar \
+      -Dfile=sqlite-android-3250200.aar \
       -DrepositoryId=lds.mobile.repo \
       -Durl=https://code.lds.org/nexus/content/repositories/mobile-3rd-party/
 
 Add Dependency to project
 
-    implementation "org.lds:sqlite-android:3.25.1"
+    implementation "org.lds:sqlite-android:3.25.2"
