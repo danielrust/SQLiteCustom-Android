@@ -9,6 +9,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.3.0-beta01'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.20.0' // version plugin support
     }
 }
 
@@ -17,13 +18,5 @@ allprojects {
         google()
         jcenter()
     }
-}
-
-ext {
-    supportLibVersion = '27.1.1'
-    coroutinesVersion = '0.27.0'
-
-    // Test
-    junitVersion = '4.12'
-    mockitoVersion = '2.22.0'
+    apply plugin: 'com.github.ben-manes.versions' // ./gradlew dependencyUpdates -Drevision=release
 }

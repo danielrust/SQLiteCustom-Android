@@ -22,13 +22,14 @@
 package org.sqlite.database.sqlite;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.sqlite.database.DatabaseErrorHandler;
 import org.sqlite.database.sqlite.SQLiteDatabase.CursorFactory;
 
 import java.io.File;
+
+import androidx.annotation.Nullable;
 
 /**
  * A helper class to manage database creation and version management.

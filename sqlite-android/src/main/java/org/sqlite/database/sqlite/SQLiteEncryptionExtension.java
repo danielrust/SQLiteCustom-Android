@@ -1,6 +1,6 @@
 package org.sqlite.database.sqlite;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public interface SQLiteEncryptionExtension {
     @Nullable

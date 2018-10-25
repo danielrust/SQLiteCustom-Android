@@ -3,20 +3,20 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "org.sqlite.app.customsqlite"
         minSdkVersion 19
-        targetSdkVersion 27
+        targetSdkVersion 28
     }
 
     dependencies {
         implementation project(':sqlite-android')
-        implementation "com.android.support:appcompat-v7:$supportLibVersion"
+        implementation "androidx.appcompat:appcompat:1.0.0"
 
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
-        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.27.0"
     }
 
     buildTypes {

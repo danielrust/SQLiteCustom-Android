@@ -44,6 +44,11 @@
 * Update gradle.properties VERSION_NAME  (example: VERSION_NAME=3.25.2)
 * Deploy via regular LDS library release process (commit changes to release branch)
 
+### Add Dependency to project
+
+    implementation "org.lds.sqlite:lds-sqlite-android:3.25.2"
+
+
 ## Deploying Pre-Built Library from sqlite.org
 
 * Download latest "Precompiled Binaries for Android" aar https://www.sqlite.org/download.html
