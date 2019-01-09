@@ -45,7 +45,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile "androidx.appcompat:appcompat:1.0.0"
+    compile "androidx.appcompat:appcompat:1.0.2"
 
     testCompile 'junit:junit:4.12'
 }
@@ -67,7 +67,6 @@ task installLocal(type: Upload) {
             pom.artifactId = POM_ARTIFACT_ID
             pom.version = VERSION_NAME
             pom.packaging = POM_PACKAGING
-            uniqueVersion = false // don't put in a timestamp on the filename (other project will not be able to depend on it)
         }
     }
 }

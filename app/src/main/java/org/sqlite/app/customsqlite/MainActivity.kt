@@ -3,33 +3,28 @@ package org.sqlite.app.customsqlite
 import android.content.Context
 import android.database.Cursor
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
-import kotlinx.coroutines.experimental.CoroutineScope
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.IO
-import kotlinx.coroutines.experimental.android.Main
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.coroutineScope
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.sqlite.database.enums.Tokenizer
 import org.sqlite.database.sqlite.SQLiteDatabase
 import org.sqlite.database.sqlite.SQLiteDatabaseCorruptException
 import org.sqlite.database.sqlite.SQLiteOpenHelper
 import java.io.FileInputStream
 import java.util.Arrays
-import kotlin.coroutines.experimental.CoroutineContext
 
-class MainActivity : AppCompatActivity(), CoroutineScope {
+class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     private val databaseFile by lazy { application.getDatabasePath("test.db") }
-
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main
 
     private lateinit var logTextView: TextView          /* Text view widget */
     private lateinit var myProgress: ProgressBar
