@@ -48,7 +48,7 @@
 
 ### Deploy
 
-* Update gradle.properties VERSION_NAME  (example: VERSION_NAME=3.25.2)
+* Update gradle.properties VERSION_NAME  (example: VERSION_NAME=3.26.0)
 * Deploy via regular LDS library release process (commit changes to release branch)
 
 ### Add Dependency to project
@@ -65,9 +65,9 @@ Example:
 
     mvn deploy:deploy-file -DgroupId=org.lds.sqlite \
       -DartifactId=sqlite-android \
-      -Dversion=3.25.2 \
+      -Dversion=3.26.0 \
       -Dpackaging=aar \
-      -Dfile=sqlite-android-3250200.aar \
+      -Dfile=sqlite-android-3260000.aar \
       -DrepositoryId=lds.mobile.repo \
       -Durl=https://code.lds.org/nexus/content/repositories/mobile-3rd-party/
 
