@@ -20,13 +20,14 @@
 
 package org.sqlite.database;
 
-import java.io.File;
-import java.util.List;
+import android.util.Log;
+import android.util.Pair;
 
 import org.sqlite.database.sqlite.SQLiteDatabase;
 import org.sqlite.database.sqlite.SQLiteException;
-import android.util.Log;
-import android.util.Pair;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * Default class used to define the action to take when database corruption is reported
@@ -48,7 +49,7 @@ import android.util.Pair;
  */
 public final class DefaultDatabaseErrorHandler implements DatabaseErrorHandler {
 
-    private static final String TAG = "DefaultDatabaseEHandler";
+    private static final String TAG = "DefaultDatabaseErrorHandler";
 
     /**
      * defines the default method to be invoked when database corruption is detected.

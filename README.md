@@ -27,9 +27,16 @@
             * fts3_html_tokenizer.*
             * libstemmer.h
             * stopwords.*
-        * Watch for areas of the code that are added for use with tokenizers and see
+        * Watch for areas of the code that are added for use with tokenizers and see (don't remove)
             * password
+                * SQLiteConnection.open() if (mConfiguration.see != null) {
+                                                      String password = mConfiguration.see.getPassword();
+                * ... others
             * tokenizer
+                * SQLiteConnection.registerTokenizer(...) .loadExtension(...)
+                * SQLiteConnection.nativeRegisterTokenizer(...) nativeLoadExtension(...)
+                * SQLiteConnectionPool.registerTokenizer(...) .loadExtension(...)
+                * ... others
 
 ### Build
 
@@ -46,7 +53,7 @@
 
 ### Add Dependency to project
 
-    implementation "org.lds.sqlite:lds-sqlite-android:3.25.2"
+    implementation "org.lds.sqlite:lds-sqlite-android:3.26.0"
 
 
 ## Deploying Pre-Built Library from sqlite.org
@@ -66,4 +73,4 @@ Example:
 
 Add Dependency to project
 
-    implementation "org.lds:sqlite-android:3.25.2"
+    implementation "org.lds:sqlite-android:3.26.0"

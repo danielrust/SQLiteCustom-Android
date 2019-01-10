@@ -157,17 +157,16 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         db.beginTransactionNonExclusive()
         db.execSQL("INSERT INTO t1 VALUES (5, 6)")
 
-        val t = Thread(Runnable {
+        val thread = Thread(Runnable {
             val st = db.compileStatement("SELECT sum(x+y) FROM t1")
             val res = st.simpleQueryForString()
         })
 
-        t.start()
+        thread.start()
         var res = "concurrent"
 
-        var i: Int
-        i = 0
-        while (i < 20 && t.isAlive) {
+        var i = 0
+        while (i < 20 && thread.isAlive) {
             try {
                 Thread.sleep(100)
             } catch (e: InterruptedException) {
@@ -177,13 +176,13 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             i++
         }
 
-        if (t.isAlive) {
+        if (thread.isAlive) {
             res = "blocked"
         }
 
         db.endTransaction()
         try {
-            t.join()
+            thread.join()
         } catch (e: InterruptedException) {
             // nothing
         }
