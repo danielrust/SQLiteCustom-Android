@@ -49,7 +49,7 @@ import java.util.List;
  */
 public final class DefaultDatabaseErrorHandler implements DatabaseErrorHandler {
 
-    private static final String TAG = "DefaultDatabaseErrorHandler";
+    private static final String TAG = "DefaultDatabaseEHandler"; // jdc: truncated; otherwise lint error
 
     /**
      * defines the default method to be invoked when database corruption is detected.
