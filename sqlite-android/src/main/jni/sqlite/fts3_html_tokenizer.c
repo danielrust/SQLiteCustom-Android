@@ -22,7 +22,7 @@
 #include <nativehelper/jni.h>
 #include <malloc.h>
 
-// Elements of these two arrays are paired*
+// Elements of these two arrays are paired
 char *ignore_opening_tags[] = { "sup class=\"marker\"", "head", "footer class=\"study-notes\"", "footer class=\"notes\"" };
 char *ignore_closing_tags[] = { "sup", "head", "footer", "footer" };
 
