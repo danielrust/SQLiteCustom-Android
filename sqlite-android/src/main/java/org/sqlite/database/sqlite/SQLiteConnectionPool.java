@@ -980,6 +980,7 @@ public final class SQLiteConnectionPool implements Closeable {
     }
 
     private void setMaxConnectionPoolSizeLocked() {
+        // LDS SQLiteCustom !SQLiteDatabase.hasCodec()
         if (!SQLiteDatabase.hasCodec() && (mConfiguration.openFlags & SQLiteDatabase.ENABLE_WRITE_AHEAD_LOGGING) != 0) {
             mMaxConnectionPoolSize = SQLiteGlobal.getWALConnectionPoolSize();
         } else {
