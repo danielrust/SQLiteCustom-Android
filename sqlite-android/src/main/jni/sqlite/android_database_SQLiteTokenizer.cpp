@@ -21,7 +21,7 @@ namespace android {
 
     static void nativeRegisterTokenizer(JNIEnv *env, jclass obj, jlong connectionPtr, jstring name, jstring data) {
         const char *nameStr = env->GetStringUTFChars(name, NULL);
-        const char *dataStr = NULL;
+        const char *dataStr = "eng";
 
         if (data != NULL) {
             dataStr = env->GetStringUTFChars(data, NULL);
@@ -35,7 +35,7 @@ namespace android {
             set_html_tokenizer_module(&p);
 
             if (p != NULL) {
-                registerTokenizer(connection->db, nameStr);
+                registerTokenizer(connection->db, nameStr, dataStr);
             }
         }
 
