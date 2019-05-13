@@ -19,6 +19,8 @@
 #if !defined(SQLITE_CORE) || defined(SQLITE_ENABLE_FTS3)
 
 #include <assert.h>
+#include <nativehelper/jni.h>
+#include <malloc.h>
 
 // Elements of these two arrays are paired
 char *ignore_opening_tags[] = { "sup class=\"marker\"", "head", "footer class=\"study-notes\"", "footer class=\"notes\"" };
@@ -26,6 +28,7 @@ char *ignore_closing_tags[] = { "sup", "head", "footer", "footer" };
 
 char *nonbreaking_tags[] = { "ruby" };
 char *nonbreaking_ignore_tags[] = { "rp", "rt" };
+char *global_locale;
 
 /*
  ** Return true if the argument interpreted as a unicode codepoint
@@ -572,6 +575,7 @@ static int unicodeCreate(
 
     memset(pNew, 0, sizeof(unicode_tokenizer));
     pNew->bRemoveDiacritic = 1;
+    pNew->locale = global_locale;
 
     for (i = 0; rc == SQLITE_OK && i < nArg; i++) {
         const char *z = azArg[i];
@@ -911,6 +915,7 @@ static const sqlite3_tokenizer_module unicode_module = {
  */
 void set_html_tokenizer_module(sqlite3_tokenizer_module const **ppModule){
     *ppModule = &unicode_module;
+    free(global_locale);
 }
 
 /*
@@ -1011,7 +1016,7 @@ static void ftsRankFunc(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
 };
 
 
-int registerTokenizer(sqlite3 *db, const char *zName) {
+int registerTokenizer(sqlite3 *db, const char *zName, const char *locale) {
     int rc;
     sqlite3_stmt *pStmt;
     const char *zSql = "SELECT fts3_tokenizer(?, ?)";
@@ -1021,7 +1026,7 @@ int registerTokenizer(sqlite3 *db, const char *zName) {
     if (rc != SQLITE_OK) {
         return rc;
     }
-
+    global_locale = strdup(locale);
     sqlite3_bind_text(pStmt, 1, zName, -1, SQLITE_STATIC);
     sqlite3_bind_blob(pStmt, 2, &p, sizeof(p), SQLITE_STATIC);
     sqlite3_step(pStmt);

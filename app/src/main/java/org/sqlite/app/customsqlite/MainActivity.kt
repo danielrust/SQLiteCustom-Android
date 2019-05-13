@@ -68,6 +68,8 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 ftsTest3()
                 suppCharTest1()
                 suppCharTest2()
+                stemmerTest1()
+                stemmerTest2()
             } catch (e: Exception) {
                 appendString("Exception: " + e.toString() + "\n")
             }
@@ -552,6 +554,60 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         testResult("supp_char_test2.$smiley", res, ".a" + smiley + "b")
 
         db.close()
+    }
+
+    @Throws(Exception::class)
+    private suspend fun stemmerTest1() {
+        SQLiteDatabase.deleteDatabase(databaseFile)
+        SQLiteDatabase.openOrCreateDatabase(databaseFile, null).use { db ->
+
+            db.registerTokenizer(Tokenizer.HTML_TOKENIZER, "eng")
+
+            db.execSQL("CREATE VIRTUAL TABLE stemmer USING fts4(text, tokenize=HTMLTokenizer)")
+
+            db.execSQL("INSERT INTO stemmer VALUES('<html> I NEED TO REPENT </html>')")
+            db.execSQL("INSERT INTO stemmer VALUES('<html> I NEED TO BE FAITHFUL AND OBEDIENT </html>')")
+
+
+            db.rawQuery("SELECT * FROM stemmer WHERE text MATCH ?", arrayOf("REPENTANCE")).use { cursor ->
+                if (cursor != null && cursor.moveToFirst()) {
+                    testResult("stemmerTest1", cursor.count.toString(), "1")
+
+                    val text = cursor.getString(cursor.getColumnIndex("text"))
+
+                    testResult("stemmerTest1", text, "<html> I NEED TO REPENT </html>")
+                } else {
+                    testResult("stemmerTest1", "0", "1")
+                }
+            }
+        }
+    }
+
+    @Throws(Exception::class)
+    private suspend fun stemmerTest2() {
+        SQLiteDatabase.deleteDatabase(databaseFile)
+        SQLiteDatabase.openOrCreateDatabase(databaseFile, null).use { db ->
+
+            db.registerTokenizer(Tokenizer.HTML_TOKENIZER, "spa")
+
+            db.execSQL("CREATE VIRTUAL TABLE stemmer USING fts4(text, tokenize=HTMLTokenizer)")
+
+            db.execSQL("INSERT INTO stemmer VALUES('<html> TIENE QUE ARREPENTIRSE </html>')")
+            db.execSQL("INSERT INTO stemmer VALUES('<html> NECESSITO UN LLAMAMIENTO </html>')")
+
+
+            db.rawQuery("SELECT * FROM stemmer WHERE text MATCH ?", arrayOf("ARREPENTIMIENTO")).use { cursor ->
+                if (cursor != null && cursor.moveToFirst()) {
+                    testResult("stemmerTest2", cursor.count.toString(), "1")
+
+                    val text = cursor.getString(cursor.getColumnIndex("text"))
+
+                    testResult("stemmerTest2", text, "<html> TIENE QUE ARREPENTIRSE </html>")
+                } else {
+                    testResult("stemmerTest2", "0", "1")
+                }
+            }
+        }
     }
 
     private suspend fun stringFromT1X(db: SQLiteDatabase): String {
