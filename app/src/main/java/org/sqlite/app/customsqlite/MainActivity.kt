@@ -490,16 +490,17 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
             db.execSQL("CREATE VIRTUAL TABLE people USING fts4(title, name, tokenize=HTMLTokenizer)")
 
-            db.execSQL("INSERT INTO people VALUES('Boss', '<html> Adrenaline <b>Junkies</b> Unite </html>')")
+            db.execSQL("INSERT INTO people VALUES('User', '<html> Adrenaline <b>Junkies</b> Unite </html>')")
             db.execSQL("INSERT INTO people VALUES('User', '<html> Linux Nerds Reunion </html>')")
             db.execSQL("INSERT INTO people VALUES('User', '<html> Penicillin Users Assemble </html>')")
             db.execSQL("INSERT INTO people VALUES('User', '<html> Burp Boss Man Returns </html>')")
             db.execSQL("INSERT INTO people VALUES('User', '<html> Fart Hero Stinks </html>')")
             db.execSQL("INSERT INTO people VALUES('User', '<html> Sneeze Scars Massage </html>')")
             db.execSQL("INSERT INTO people VALUES('User', '<html> Leian Solo Falls </html>')")
-            db.execSQL("INSERT INTO people VALUES('Boss', '<html> Bob Boss Unites Jobs Boss </html>')")
+            db.execSQL("INSERT INTO people VALUES('Boss', '<html> Bob  Unites Jobs  </html>')")
+            db.execSQL("INSERT INTO people VALUES('User', '<html> Boss Boss </html>')")
 
-            db.rawQuery("SELECT * FROM people WHERE people MATCH ? ORDER BY ftsrank(matchinfo(people), 1.0, 0.5) DESC", arrayOf("boss")).use { cursor ->
+            db.rawQuery("SELECT * FROM people WHERE people MATCH ? ORDER BY ftsrank(matchinfo(people), 0.7, 0.7) DESC", arrayOf("Boss")).use { cursor ->
 //                cursor.moveToFirst()
 //                do {
 //                    val title = cursor.getString(cursor.getColumnIndex("title"))
@@ -514,7 +515,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     val name = cursor.getString(cursor.getColumnIndex("name"))
 
                     testResult("fts_text_3.1", title, "Boss")
-                    testResult("fts_text_3.2", name, "<html> Bob Boss Unites Jobs Boss </html>")
+                    testResult("fts_text_3.2", name, "<html> Bob  Unites Jobs  </html>")
                 } else {
                     testResult("fts_text_3.0", "0", "1")
                 }
