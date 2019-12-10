@@ -2,11 +2,11 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 28
+        minSdkVersion 21
+        targetSdkVersion 29
         versionCode 12
     }
 
@@ -41,11 +41,12 @@ android {
             }
         }
     }
+    ndkVersion '20.1.5948944'
 }
 
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
-    api "androidx.appcompat:appcompat:1.0.2"
+    api "androidx.appcompat:appcompat:1.1.0"
 
     testImplementation 'junit:junit:4.12'
 }
