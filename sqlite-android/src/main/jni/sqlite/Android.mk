@@ -9,13 +9,13 @@ LOCAL_CFLAGS += -DSQLITE_HAS_CODEC
 LOCAL_CFLAGS += -DHAVE_USLEEP=1
 
 # Enable SQLite extensions.
-LOCAL_CFLAGS += -DSQLITE_ENABLE_FTS5
+LOCAL_CFLAGS += -DSQLITE_ENABLE_FTS5 
 LOCAL_CFLAGS += -DSQLITE_ENABLE_RTREE
 LOCAL_CFLAGS += -DSQLITE_ENABLE_JSON1
 LOCAL_CFLAGS += -DSQLITE_ENABLE_FTS3
 LOCAL_CFLAGS += -DSQLITE_ENABLE_BATCH_ATOMIC_WRITE
 
-# This is important - it causes SQLite to use memory for temp files. Since
+# This is important - it causes SQLite to use memory for temp files. Since 
 # Android has no globally writable temp directory, if this is not defined the
 # application throws an exception when it tries to create a temp file.
 #
