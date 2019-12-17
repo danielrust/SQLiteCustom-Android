@@ -23,11 +23,11 @@
 #include <malloc.h>
 
 // Elements of these two arrays are paired
-char *ignore_opening_tags[] = { "sup class=\"marker\"", "head", "footer class=\"study-notes\"", "footer class=\"notes\"" };
-char *ignore_closing_tags[] = { "sup", "head", "footer", "footer" };
+char *ignore_opening_tags[] = {"sup class=\"marker\"", "head", "footer class=\"study-notes\"", "footer class=\"notes\""};
+char *ignore_closing_tags[] = {"sup", "head", "footer", "footer"};
 
-char *nonbreaking_tags[] = { "ruby" };
-char *nonbreaking_ignore_tags[] = { "rp", "rt" };
+char *nonbreaking_tags[] = {"ruby"};
+char *nonbreaking_ignore_tags[] = {"rp", "rt"};
 char *global_locale;
 
 /*
@@ -37,10 +37,84 @@ char *global_locale;
 static int sqlite3FtsUnicodeIsdiacritic(int c) {
     unsigned int mask0 = 0x08029FDF;
     unsigned int mask1 = 0x000361F8;
-    if( c<768 || c>817 ) return 0;
-    return (c < 768+32) ?
-           (mask0 & (1 << (c-768))) :
-           (mask1 & (1 << (c-768-32)));
+    if (c < 768 || c > 817) return 0;
+    return (c < 768 + 32) ?
+           (mask0 & (1 << (c - 768))) :
+           (mask1 & (1 << (c - 768 - 32)));
+}
+
+/*
+** Return true if the argument corresponds to a unicode codepoint
+** that could be classified as an emoji character. Otherwise false.
+**
+** The results are undefined if the value passed to this function
+** is less than zero.
+*/
+static int sqlite3FtsUnicodeCouldBeEmoji(int c) {
+    /* Each unsigned integer in the following array corresponds to a contiguous
+    ** range of unicode codepoints that are could be part of an emoji character (i.e.
+    ** codepoints for which this function should return 1).
+    **
+    ** The most significant 22 bits in each 32-bit value contain the first
+    ** codepoint in the range. The least significant 10 bits are used to store
+    ** the size of the range (always at least 1). In other words, the value
+    ** ((C<<22) + N) represents a range of N codepoints starting with codepoint
+    ** C. It is not possible to represent a range larger than 1023 codepoints
+    ** using this format.
+    */
+    static const unsigned int emojiEntry[] = {
+        0x00008C01, 0x0000A801, 0x0000C00A, 0x0002A401, 0x0002B801,
+        0x00803401, 0x0080F001, 0x00812401, 0x00838C01, 0x00848801,
+        0x0084E401, 0x00865006, 0x0086A402, 0x008C6802, 0x008CA001,
+        0x008F3C01, 0x008FA40B, 0x008FE003, 0x00930801, 0x0096A802,
+        0x0096D801, 0x00970001, 0x0097EC04, 0x00980005, 0x00983801,
+        0x00984401, 0x00985002, 0x00986001, 0x00987401, 0x00988001,
+        0x00988802, 0x00989801, 0x0098A801, 0x0098B802, 0x0098E003,
+        0x00990001, 0x00990801, 0x0099200C, 0x00997C02, 0x00998C01,
+        0x00999402, 0x0099A001, 0x0099EC01, 0x0099F802, 0x009A4806,
+        0x009A6401, 0x009A6C02, 0x009A8002, 0x009AA802, 0x009AC002,
+        0x009AF402, 0x009B1002, 0x009B2001, 0x009B3802, 0x009B4401,
+        0x009B4C02, 0x009BA402, 0x009BC006, 0x009BDC04, 0x009BF401,
+        0x009C0801, 0x009C1401, 0x009C2006, 0x009C3C01, 0x009C4801,
+        0x009C5001, 0x009C5801, 0x009C7401, 0x009C8401, 0x009CA001,
+        0x009CCC02, 0x009D1001, 0x009D1C01, 0x009D3001, 0x009D3801,
+        0x009D4C03, 0x009D5C01, 0x009D8C02, 0x009E5403, 0x009E8401,
+        0x009EC001, 0x009EFC01, 0x00A4D002, 0x00AC1403, 0x00AC6C02,
+        0x00AD4001, 0x00AD5401, 0x00C0C001, 0x00C0F401, 0x00CA5C01,
+        0x00CA6401, 0x03F83C01, 0x07C01001, 0x07C33C01, 0x07C5C002,
+        0x07C5F802, 0x07C63801, 0x07C6440A, 0x07C7981A, 0x07C80402,
+        0x07C86801, 0x07C8BC01, 0x07C8C809, 0x07C94002, 0x07CC0022,
+        0x07CC905F, 0x07CE1010, 0x07CE5802, 0x07CE6403, 0x07CE7853,
+        0x07CFCC03, 0x07CFDC87, 0x07D1FC7F, 0x07D3FC3F, 0x07D52406,
+        0x07D54018, 0x07D5BC02, 0x07D5CC08, 0x07D61C01, 0x07D62804,
+        0x07D64001, 0x07D65801, 0x07D69002, 0x07D6A001, 0x07D6C402,
+        0x07D6F001, 0x07D70803, 0x07D74403, 0x07D77003, 0x07D78401,
+        0x07D78C01, 0x07D7A001, 0x07D7BC01, 0x07D7CC01, 0x07D7E856,
+        0x07DA0046, 0x07DB2C08, 0x07DB5401, 0x07DB8006, 0x07DBA401,
+        0x07DBAC02, 0x07DBC001, 0x07DBCC08, 0x07DF800C, 0x07E4342E,
+        0x07E4F00A, 0x07E51C2B, 0x07E5CC04, 0x07E5E824, 0x07E67C04,
+        0x07E69406, 0x07E6B813, 0x07E70809, 0x07E73421, 0x07E7BC11,
+        0x07E9C004, 0x07E9E003, 0x07EA0003, 0x07EA4006, 0x38018802,
+        0x38019401, 0x38019C01, 0x3801B001, 0x3801B801, 0x3801CC02,
+        0x3801DC01,
+    };
+
+    unsigned int key = (((unsigned int) c) << 10) | 0x000003FF;
+    int iRes = 0;
+    int iHi = sizeof(emojiEntry) / sizeof(emojiEntry[0]) - 1;
+    int iLo = 0;
+    while (iHi >= iLo) {
+        int iTest = (iHi + iLo) / 2;
+        if (key >= emojiEntry[iTest]) {
+            iRes = iTest;
+            iLo = iTest + 1;
+        } else {
+            iHi = iTest - 1;
+        }
+    }
+    assert(aEntry[0] < key);
+    assert(key >= aEntry[iRes]);
+    return (((unsigned int) c) < ((emojiEntry[iRes] >> 10) + (emojiEntry[iRes] & 0x3FF)));
 }
 
 /*
@@ -152,6 +226,8 @@ static int sqlite3FtsUnicodeIsalnum(int c) {
 
     if (c < 128) {
         return ((aAscii[c >> 5] & (1 << (c & 0x001F))) == 0);
+    } else if (sqlite3FtsUnicodeCouldBeEmoji(c)) {
+        return 1;
     } else if (c < (1 << 22)) {
         unsigned int key = (((unsigned int) c) << 10) | 0x000003FF;
         int iRes = 0;
@@ -360,9 +436,7 @@ static int sqlite3FtsUnicodeFold(int c, int bRemoveDiacritic) {
         }
 
         if (bRemoveDiacritic) ret = remove_diacritic(ret);
-    }
-
-    else if (c >= 66560 && c < 66600) {
+    } else if (c >= 66560 && c < 66600) {
         ret = c + 40;
     }
 
@@ -479,8 +553,8 @@ static int unicodeAddExceptions(
         int bAlnum,                     /* Replace Isalnum() return value with this */
         const char *zIn,                /* Array of characters to make exceptions */
         int nIn                         /* Length of z in bytes */
-){
-    const unsigned char *z = (const unsigned char *)zIn;
+) {
+    const unsigned char *z = (const unsigned char *) zIn;
     const unsigned char *zTerm = &z[nIn];
     int iCode;
     int nEntry = 0;
@@ -501,7 +575,7 @@ static int unicodeAddExceptions(
         int *aNew;                    /* New aiException[] array */
         int nNew;                     /* Number of valid entries in array aNew[] */
 
-        aNew = (int *)sqlite3_realloc(p->aiException, (p->nException + nEntry) * sizeof(int));
+        aNew = (int *) sqlite3_realloc(p->aiException, (p->nException + nEntry) * sizeof(int));
         if (aNew == 0) return SQLITE_NOMEM;
         nNew = p->nException;
 
@@ -563,9 +637,9 @@ static int unicodeIsAlnum(unicode_tokenizer *p, int iCode) {
  */
 static int unicodeCreate(
         int nArg,                       /* Size of array argv[] */
-        const char * const *azArg,      /* Tokenizer creation arguments */
+        const char *const *azArg,      /* Tokenizer creation arguments */
         sqlite3_tokenizer **pp          /* OUT: New tokenizer handle */
-){
+) {
     unicode_tokenizer *pNew;        /* New tokenizer object */
     int i;
     int rc = SQLITE_OK;
@@ -583,22 +657,17 @@ static int unicodeCreate(
 
         if (n == 19 && memcmp("remove_diacritics=1", z, 19) == 0) {
             pNew->bRemoveDiacritic = 1;
-        }
-        else if (n == 19 && memcmp("remove_diacritics=0", z, 19) == 0) {
+        } else if (n == 19 && memcmp("remove_diacritics=0", z, 19) == 0) {
             pNew->bRemoveDiacritic = 0;
-        }
-        else if (n >= 11 && memcmp("tokenchars=", z, 11) == 0) {
+        } else if (n >= 11 && memcmp("tokenchars=", z, 11) == 0) {
             rc = unicodeAddExceptions(pNew, 1, &z[11], n - 11);
-        }
-        else if (n >= 11 && memcmp("separators=", z, 11) == 0) {
+        } else if (n >= 11 && memcmp("separators=", z, 11) == 0) {
             rc = unicodeAddExceptions(pNew, 0, &z[11], n - 11);
-        }
-        else if (n > 0) {
+        } else if (n > 0) {
             pNew->locale = malloc((n + 1) * sizeof(char));
             strcpy(pNew->locale, z);
             pNew->locale[n] = '\0';
-        }
-        else {
+        } else {
             /* Unrecognized argument */
             rc = SQLITE_ERROR;
         }
@@ -623,7 +692,7 @@ static int unicodeOpen(
         const char *aInput,             /* Input string */
         int nInput,                     /* Size of string aInput in bytes */
         sqlite3_tokenizer_cursor **pp   /* OUT: New cursor object */
-){
+) {
     unicode_cursor *pCsr;
 
     pCsr = (unicode_cursor *) sqlite3_malloc(sizeof(unicode_cursor));
@@ -717,7 +786,7 @@ static int unicodeNext(
                         // Find location of end tag
                         char *found = strstr(z, tagEnd);
                         if (found != NULL) {
-                            iCode = *(z += (found - (char *)z) + closingLength);
+                            iCode = *(z += (found - (char *) z) + closingLength);
                             break;
                         }
                     }
@@ -735,7 +804,7 @@ static int unicodeNext(
                             // Find location of end tag
                             char *found = strstr(z, tagEnd);
                             if (found != NULL) {
-                                iCode = *(z += (found - (char *)z) + length);
+                                iCode = *(z += (found - (char *) z) + length);
                                 break;
                             }
                         }
@@ -768,7 +837,7 @@ static int unicodeNext(
 
         /* Grow the output buffer if required. */
         if ((zOut - pCsr->zToken) >= (pCsr->nAlloc - 4)) {
-            char *zNew = (char *)sqlite3_realloc(pCsr->zToken, pCsr->nAlloc + 64);
+            char *zNew = (char *) sqlite3_realloc(pCsr->zToken, pCsr->nAlloc + 64);
             if (!zNew) {
                 return SQLITE_NOMEM;
             }
@@ -825,7 +894,7 @@ static int unicodeNext(
                         // Find location of end tag
                         char *found = strstr(z, tagEnd);
                         if (found != NULL) {
-                            iCode = *(z += (found - (char *)z) + length);
+                            iCode = *(z += (found - (char *) z) + length);
 
                             while (z != zTerm && z[0] != '>') {
                                 iCode = *(z++);
@@ -886,8 +955,8 @@ static int unicodeNext(
     }
 
     if (stemmed) {
-        *paToken = (char *)stemmed;
-        *pnToken = strlen((char *)stemmed);
+        *paToken = (char *) stemmed;
+        *pnToken = strlen((char *) stemmed);
     } else {
         *paToken = pCsr->zToken;
         *pnToken = zOut - pCsr->zToken;
@@ -913,7 +982,7 @@ static const sqlite3_tokenizer_module unicode_module = {
  ** Set *ppModule to a pointer to the sqlite3_tokenizer_module
  ** structure for the unicode tokenizer.
  */
-void set_html_tokenizer_module(sqlite3_tokenizer_module const **ppModule){
+void set_html_tokenizer_module(sqlite3_tokenizer_module const **ppModule) {
     *ppModule = &unicode_module;
     free(global_locale);
 }
@@ -952,7 +1021,7 @@ void set_html_tokenizer_module(sqlite3_tokenizer_module const **ppModule){
  **     WHERE documents MATCH <query>
  **     ORDER BY rank(matchinfo(documents), 1.0, 0.5) DESC
  */
-static void ftsRankFunc(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
+static void ftsRankFunc(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal) {
     int *aMatchinfo;                /* Return value of matchinfo() */
     int nMatchinfo;                 /* Number of elements in aMatchinfo[] */
     int nCol = 0;                   /* Number of columns in the table */
@@ -960,7 +1029,7 @@ static void ftsRankFunc(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
     int iPhrase;                    /* Current phrase */
     double score = 0.0;             /* Value to return */
 
-    assert( sizeof(int)==4 );
+    assert(sizeof(int) == 4);
 
     /* Check that the number of arguments passed to this function is correct.
      ** If not, jump to wrong_number_args. Set aMatchinfo to point to the array
@@ -969,22 +1038,22 @@ static void ftsRankFunc(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
      ** query, and nCol to the number of columns in the table. Then check that the
      ** size of the matchinfo blob is as expected. Return an error if it is not.
      */
-    if( nVal<1 ) goto wrong_number_args;
-    aMatchinfo = (unsigned int *)sqlite3_value_blob(apVal[0]);
+    if (nVal < 1) goto wrong_number_args;
+    aMatchinfo = (unsigned int *) sqlite3_value_blob(apVal[0]);
     nMatchinfo = sqlite3_value_bytes(apVal[0]) / sizeof(int);
-    if( nMatchinfo>=2 ){
+    if (nMatchinfo >= 2) {
         nPhrase = aMatchinfo[0];
         nCol = aMatchinfo[1];
     }
-    if( nMatchinfo!=(2+3*nCol*nPhrase) ){
+    if (nMatchinfo != (2 + 3 * nCol * nPhrase)) {
         sqlite3_result_error(pCtx,
                              "invalid matchinfo blob passed to function ftsRankfunc()", -1);
         return;
     }
-    if( nVal!=(1+nCol) ) goto wrong_number_args;
+    if (nVal != (1 + nCol)) goto wrong_number_args;
 
     /* Iterate through each phrase in the users query. */
-    for(iPhrase=0; iPhrase<nPhrase; iPhrase++){
+    for (iPhrase = 0; iPhrase < nPhrase; iPhrase++) {
         int iCol;                     /* Current column */
 
         /* Now iterate through each column in the users query. For each column,
@@ -996,13 +1065,13 @@ static void ftsRankFunc(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
          ** the hit count and global hit counts for each column are found in
          ** aPhraseinfo[iCol*3] and aPhraseinfo[iCol*3+1], respectively.
          */
-        int *aPhraseinfo = &aMatchinfo[2 + iPhrase*nCol*3];
-        for(iCol=0; iCol<nCol; iCol++){
-            int nHitCount = aPhraseinfo[3*iCol];
-            int nGlobalHitCount = aPhraseinfo[3*iCol+1];
-            double weight = sqlite3_value_double(apVal[iCol+1]);
-            if( nHitCount>0 ){
-                score += ((double)nHitCount / (double)nGlobalHitCount) * weight;
+        int *aPhraseinfo = &aMatchinfo[2 + iPhrase * nCol * 3];
+        for (iCol = 0; iCol < nCol; iCol++) {
+            int nHitCount = aPhraseinfo[3 * iCol];
+            int nGlobalHitCount = aPhraseinfo[3 * iCol + 1];
+            double weight = sqlite3_value_double(apVal[iCol + 1]);
+            if (nHitCount > 0) {
+                score += ((double) nHitCount / (double) nGlobalHitCount) * weight;
             }
         }
     }
