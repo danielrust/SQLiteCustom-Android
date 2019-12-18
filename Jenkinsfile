@@ -84,7 +84,7 @@ pipeline {
                 }
                 stage("Upload to Maven Repo") {
                     steps {
-                        sh './gradlew uploadArchives'
+                        sh './gradlew publishMavenPublicationToArtifactoryRepository'
                     }
                 }
             }
