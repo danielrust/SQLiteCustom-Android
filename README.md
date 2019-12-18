@@ -41,6 +41,12 @@
                 * SQLiteConnectionPool.registerTokenizer(...) .loadExtension(...)
                 * ... others
 
+### Update Libstemmer
+* Get the latest libstemmer files from https://snowballstem.org/download.html (https://snowballstem.org/dist/libstemmer_c.tgz)
+* Extract files to temp directory
+* Compare and merge all files currently using meld (DO NOT update [#include "../../libstemmer.h"] to #include "../include/libstemmer.h", leave as is)
+* Add new language files to jni/sqlite/Android.mk
+
 ### Build
 
 * Run "Build" -> "Rebuild Project"

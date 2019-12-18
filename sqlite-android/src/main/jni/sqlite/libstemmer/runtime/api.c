@@ -1,4 +1,3 @@
-
 #include <stdlib.h> /* for calloc, free */
 #include "header.h"
 
