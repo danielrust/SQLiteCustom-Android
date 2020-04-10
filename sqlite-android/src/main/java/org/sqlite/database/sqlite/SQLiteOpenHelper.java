@@ -22,11 +22,9 @@
 package org.sqlite.database.sqlite;
 
 import android.content.Context;
-import android.util.Log;
-
 import org.sqlite.database.DatabaseErrorHandler;
 import org.sqlite.database.sqlite.SQLiteDatabase.CursorFactory;
-
+import android.util.Log;
 import java.io.File;
 
 import androidx.annotation.Nullable;
@@ -71,6 +69,7 @@ public abstract class SQLiteOpenHelper implements SQLiteEncryptionExtension {
     private boolean mEnableWriteAheadLogging;
     private final DatabaseErrorHandler mErrorHandler;
 
+    // ChurchOfJesusChrist/SQLiteCustom-Android Library, do not remove	
     @Nullable
     @Override
     public String getPassword() {

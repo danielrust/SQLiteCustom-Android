@@ -20,14 +20,13 @@
 
 package org.sqlite.database;
 
-import android.util.Log;
-import android.util.Pair;
+import java.io.File;
+import java.util.List;
 
 import org.sqlite.database.sqlite.SQLiteDatabase;
 import org.sqlite.database.sqlite.SQLiteException;
-
-import java.io.File;
-import java.util.List;
+import android.util.Log;
+import android.util.Pair;
 
 /**
  * Default class used to define the action to take when database corruption is reported

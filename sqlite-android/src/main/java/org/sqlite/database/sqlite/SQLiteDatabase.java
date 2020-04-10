@@ -22,6 +22,11 @@ package org.sqlite.database.sqlite;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import org.sqlite.database.DatabaseErrorHandler;
+import org.sqlite.database.DatabaseUtils;
+import org.sqlite.database.DefaultDatabaseErrorHandler;
+import org.sqlite.database.SQLException;
+import org.sqlite.database.sqlite.SQLiteDebug.DbStats;
 import android.os.CancellationSignal;
 import android.os.Looper;
 import android.os.OperationCanceledException;
@@ -31,12 +36,9 @@ import android.util.Log;
 import android.util.Pair;
 import android.util.Printer;
 
-import org.sqlite.database.DatabaseErrorHandler;
-import org.sqlite.database.DatabaseUtils;
-import org.sqlite.database.DefaultDatabaseErrorHandler;
-import org.sqlite.database.SQLException;
+// ChurchOfJesusChrist/SQLiteCustom-Android Library, do not remove	
 import org.sqlite.database.enums.Tokenizer;
-import org.sqlite.database.sqlite.SQLiteDebug.DbStats;
+import org.sqlite.database.sqlite.CloseGuard;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -262,6 +264,7 @@ public final class SQLiteDatabase extends SQLiteClosable {
         mConfigurationLocked = new SQLiteDatabaseConfiguration(path, openFlags, null);
     }
 
+    // ChurchOfJesusChrist/SQLiteCustom-Android Library, do not remove	
     private SQLiteDatabase(String path, int openFlags, CursorFactory cursorFactory,
             DatabaseErrorHandler errorHandler, SQLiteEncryptionExtension see) {
         mCursorFactory = cursorFactory;
@@ -705,7 +708,8 @@ public final class SQLiteDatabase extends SQLiteClosable {
         db.open();
         return db;
     }
-
+    
+    // ChurchOfJesusChrist/SQLiteCustom-Android Library, do not remove	
     public static SQLiteDatabase openDatabase(String path, CursorFactory factory, int flags,
             DatabaseErrorHandler errorHandler, SQLiteEncryptionExtension see) {
         SQLiteDatabase db = new SQLiteDatabase(path, flags, factory, errorHandler, see);
@@ -735,6 +739,7 @@ public final class SQLiteDatabase extends SQLiteClosable {
         return openDatabase(path, factory, CREATE_IF_NECESSARY, errorHandler);
     }
 
+    // ChurchOfJesusChrist/SQLiteCustom-Android Library, do not remove next 3 methods
     /**
      * Equivalent to openDatabase(file.getPath(), factory, CREATE_IF_NECESSARY).
      */
@@ -869,6 +874,7 @@ public final class SQLiteDatabase extends SQLiteClosable {
                 factory, CREATE_IF_NECESSARY);
     }
 
+    // ChurchOfJesusChrist/SQLiteCustom-Android Library, do not remove	
     public static SQLiteDatabase create(CursorFactory factory, SQLiteEncryptionExtension see) {
         // This is a magic string with special meaning for SQLite.
         return openDatabase(SQLiteDatabaseConfiguration.MEMORY_DB_PATH,
@@ -901,17 +907,20 @@ public final class SQLiteDatabase extends SQLiteClosable {
         }
     }
 
+    // ChurchOfJesusChrist/SQLiteCustom-Android Library, do not remove	
     public void registerTokenizer(Tokenizer tokenizer) throws RuntimeException {
         registerTokenizer(tokenizer, null);
     }
-
+    
+    // ChurchOfJesusChrist/SQLiteCustom-Android Library, do not remove	
     public void registerTokenizer(Tokenizer tokenizer, String data) throws RuntimeException {
         synchronized (mLock) {
             throwIfNotOpenLocked();
             mConnectionPoolLocked.registerTokenizer(tokenizer.getName(), data);
         }
     }
-
+    
+    // ChurchOfJesusChrist/SQLiteCustom-Android Library, do not remove	
     /**
      * Load an extension
      * @param name the name of the extension so file

@@ -6,15 +6,15 @@ buildscript {
         maven {
             url = uri("https://code.lds.org/artifactory/mobile")
             credentials {
-                val icsArtifactoryUsername: String by project
-                val icsArtifactoryPassword: String by project
-                username = icsArtifactoryUsername
-                password = icsArtifactoryPassword
+                val icsExternalMavenUsername: String? by project
+                val icsExternalMavenPassword: String? by project
+                username = icsExternalMavenUsername
+                password = icsExternalMavenPassword
             }
         }
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.5.3")
+        classpath("com.android.tools.build:gradle:3.6.2")
         classpath("com.github.ben-manes:gradle-versions-plugin:0.27.0") // version plugin support
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION")
     }
@@ -26,10 +26,10 @@ allprojects {
         maven {
             url = uri("https://code.lds.org/artifactory/mobile")
             credentials {
-                val icsArtifactoryUsername: String by project
-                val icsArtifactoryPassword: String by project
-                username = icsArtifactoryUsername
-                password = icsArtifactoryPassword
+                val icsExternalMavenUsername: String? by project
+                val icsExternalMavenPassword: String? by project
+                username = icsExternalMavenUsername
+                password = icsExternalMavenPassword
             }
         }
     }

@@ -47,6 +47,10 @@
 * Compare and merge all files currently using meld (DO NOT update [#include "../../libstemmer.h"] to #include "../include/libstemmer.h", leave as is)
 * Add new language files to jni/sqlite/Android.mk
 
+### Update FTS3HTMLTokenizer
+* Retrieve latest code found at https://github.com/stephanheilner/FTS3HTMLTokenizer
+* Compare and merge fts3_html_tokenizer .c & .h files.
+
 ### Build
 
 * Run "Build" -> "Rebuild Project"

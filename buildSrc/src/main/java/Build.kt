@@ -6,7 +6,7 @@ object AndroidSdk {
 
 object Pom {
     const val GROUP_ID = "org.lds.sqlite"
-    const val VERSION = "3.30.2"
+    const val VERSION = "3.31.1"
 
     const val LIBRARY_ARTIFACT_ID = "lds-sqlite-android"
 }
