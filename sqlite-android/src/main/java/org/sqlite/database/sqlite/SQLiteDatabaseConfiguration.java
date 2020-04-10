@@ -54,6 +54,7 @@ public final class SQLiteDatabaseConfiguration {
      */
     public final String path;
 
+    // ChurchOfJesusChrist/SQLiteCustom-Android Library, do not remove	
     /**
      * The database password.
      */
@@ -98,6 +99,7 @@ public final class SQLiteDatabaseConfiguration {
     public final ArrayList<SQLiteCustomFunction> customFunctions =
             new ArrayList<SQLiteCustomFunction>();
 
+    // ChurchOfJesusChrist/SQLiteCustom-Android Library, do not remove	
     /**
      * Creates a database configuration with the required parameters for opening a
      * database and default values for all other parameters.

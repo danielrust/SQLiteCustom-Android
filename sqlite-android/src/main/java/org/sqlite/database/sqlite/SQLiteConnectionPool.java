@@ -20,13 +20,14 @@
 
 package org.sqlite.database.sqlite;
 
+import org.sqlite.database.sqlite.CloseGuard;
+
+import org.sqlite.database.sqlite.SQLiteDebug.DbStats;
 import android.os.CancellationSignal;
 import android.os.OperationCanceledException;
 import android.os.SystemClock;
 import android.util.Log;
 import android.util.Printer;
-
-import org.sqlite.database.sqlite.SQLiteDebug.DbStats;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -458,6 +459,7 @@ public final class SQLiteConnectionPool implements Closeable {
         }
     }
 
+    // ChurchOfJesusChrist/SQLiteCustom-Android Library Method, do not remove	
     void registerTokenizer(String name, String data) throws RuntimeException {
         synchronized (mLock) {
             if (mAvailablePrimaryConnection != null) {
@@ -474,6 +476,7 @@ public final class SQLiteConnectionPool implements Closeable {
         }
     }
 
+    // ChurchOfJesusChrist/SQLiteCustom-Android Library Method, do not remove	
     void loadExtension(String name) throws RuntimeException {
         synchronized (mLock) {
             if (mAvailablePrimaryConnection != null) {

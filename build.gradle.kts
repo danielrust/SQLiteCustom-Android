@@ -4,7 +4,7 @@ buildscript {
     repositories {
         mavenLocal()
         maven {
-            url = uri("https://repo.churchofjesuschrist.org/artifactory/mobile")
+            url = uri("https://code.lds.org/artifactory/mobile")
             credentials {
                 val icsExternalMavenUsername: String? by project
                 val icsExternalMavenPassword: String? by project
@@ -14,7 +14,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.5.3")
+        classpath("com.android.tools.build:gradle:3.6.2")
         classpath("com.github.ben-manes:gradle-versions-plugin:0.27.0") // version plugin support
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION")
     }
@@ -24,7 +24,7 @@ allprojects {
     repositories {
         mavenLocal()
         maven {
-            url = uri("https://repo.churchofjesuschrist.org/artifactory/mobile")
+            url = uri("https://code.lds.org/artifactory/mobile")
             credentials {
                 val icsExternalMavenUsername: String? by project
                 val icsExternalMavenPassword: String? by project

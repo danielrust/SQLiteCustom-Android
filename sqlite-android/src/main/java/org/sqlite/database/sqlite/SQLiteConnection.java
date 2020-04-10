@@ -20,8 +20,12 @@
 
 package org.sqlite.database.sqlite;
 
+import org.sqlite.database.sqlite.CloseGuard;
+
 import android.database.Cursor;
 import android.database.CursorWindow;
+import org.sqlite.database.DatabaseUtils;
+import org.sqlite.database.sqlite.SQLiteDebug.DbStats;
 import android.os.CancellationSignal;
 import android.os.OperationCanceledException;
 import android.os.ParcelFileDescriptor;
@@ -30,13 +34,11 @@ import android.util.Log;
 import android.util.LruCache;
 import android.util.Printer;
 
-import org.sqlite.database.DatabaseUtils;
-import org.sqlite.database.sqlite.SQLiteDebug.DbStats;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Represents a SQLite database connection.
@@ -122,7 +124,9 @@ public final class SQLiteConnection implements CancellationSignal.OnCancelListen
     private static native void nativeClose(long connectionPtr);
     private static native void nativeRegisterCustomFunction(long connectionPtr,
             SQLiteCustomFunction function);
+    // ChurchOfJesusChrist/SQLiteCustom-Android Library Method, do not remove	
     private static native void nativeRegisterTokenizer(long connectionPtr, String name, String data);
+    // ChurchOfJesusChrist/SQLiteCustom-Android Library Method, do not remove	
     private static native int nativeLoadExtension(long connectionPtr, String name);
     private static native void nativeRegisterLocalizedCollators(long connectionPtr, String locale);
     private static native long nativePrepareStatement(long connectionPtr, String sql);
@@ -214,7 +218,8 @@ public final class SQLiteConnection implements CancellationSignal.OnCancelListen
         mConnectionPtr = nativeOpen(mConfiguration.path, mConfiguration.openFlags,
                 mConfiguration.label,
                 SQLiteDebug.DEBUG_SQL_STATEMENTS, SQLiteDebug.DEBUG_SQL_TIME);
-
+	
+	// ChurchOfJesusChrist/SQLiteCustom-Android Library Method, do not remove	
         if (mConfiguration.see != null) {
             String password = mConfiguration.see.getPassword();
             if (password != null) {
@@ -996,6 +1001,7 @@ public final class SQLiteConnection implements CancellationSignal.OnCancelListen
         nativeCancel(mConnectionPtr);
     }
 
+    // ChurchOfJesusChrist/SQLiteCustom-Android Library Method, do not remove			
     void registerTokenizer(String name, String data) {
         try {
             nativeRegisterTokenizer(mConnectionPtr, name, data);
@@ -1006,6 +1012,7 @@ public final class SQLiteConnection implements CancellationSignal.OnCancelListen
         }
     }
 
+    // ChurchOfJesusChrist/SQLiteCustom-Android Library Method, do not remove	
     void loadExtension(String name) throws RuntimeException {
         try {
             nativeLoadExtension(mConnectionPtr, name);
