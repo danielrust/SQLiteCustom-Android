@@ -4,12 +4,12 @@ buildscript {
     repositories {
         mavenLocal()
         maven {
-            url = uri("https://code.lds.org/artifactory/mobile")
+            url = uri("https://repo.churchofjesuschrist.org/artifactory/mobile")
             credentials {
-                val icsArtifactoryUsername: String by project
-                val icsArtifactoryPassword: String by project
-                username = icsArtifactoryUsername
-                password = icsArtifactoryPassword
+                val icsExternalMavenUsername: String? by project
+                val icsExternalMavenPassword: String? by project
+                username = icsExternalMavenUsername
+                password = icsExternalMavenPassword
             }
         }
     }
@@ -24,12 +24,12 @@ allprojects {
     repositories {
         mavenLocal()
         maven {
-            url = uri("https://code.lds.org/artifactory/mobile")
+            url = uri("https://repo.churchofjesuschrist.org/artifactory/mobile")
             credentials {
-                val icsArtifactoryUsername: String by project
-                val icsArtifactoryPassword: String by project
-                username = icsArtifactoryUsername
-                password = icsArtifactoryPassword
+                val icsExternalMavenUsername: String? by project
+                val icsExternalMavenPassword: String? by project
+                username = icsExternalMavenUsername
+                password = icsExternalMavenPassword
             }
         }
     }
